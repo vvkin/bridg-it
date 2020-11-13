@@ -5,6 +5,7 @@ import numpy as np
 class Bridgit:
     def __init__(self, level: str, player_num: int):
         self.depth = LEVELS[level]
+        self.winner = None
         self.grid = np.zeros((GRID_SIZE, GRID_SIZE), np.int)
         self.player_num = player_num
         self.init_grid()
@@ -22,7 +23,21 @@ class Bridgit:
                 and not (move[0] in (0, GRID_SIZE - 1) and self.player_num != 1)
                 and not (move[1] in (0, GRID_SIZE - 1) and self.player_num != 2)
         )
+    
+    def is_over(self) -> bool:
+        gridT = self.grid.transpose()
+
+        for i in range(GRID_SIZE):
+            if np.all(self.grid[i] == 2):
+                self.winner = 2
+            if np.all(gridT[i] == 1):
+                self.winner = 1
         
+        return (self.winner is not None)
+
+    def get_winner(self) -> int:
+        return self.winner
+                
     def handle_move(self, move: Tuple) -> Tuple:
         self.grid[move] = self.player_num
         self.make_move()
