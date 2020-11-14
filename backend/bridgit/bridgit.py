@@ -26,8 +26,17 @@ class Bridgit:
                 and not (move[1] in (0, GRID_SIZE - 1) and self.f_move)
         )
     
+    def is_over(self) -> bool:
+        return self.winner is not None
+    
     def set_move(self, move: Tuple[int, int]) -> None:
         self.grid[move] = self.f_move + 1
+        if AlphaBetaPrunning.is_terminal(self.grid, move, self.f_move):
+            self.winner = self.f_move
 
     def get_move(self) -> Tuple[int, int]:
-        pass
+        bot_move = self.search(self.grid)
+        self.grid[bot_move] = (not self.f_move + 1) # update grid
+        if AlphaBetaPrunning.is_terminal(self.grid, bot_move, not self.f_move):
+            self.winner = not self.f_move
+        return bot_move
