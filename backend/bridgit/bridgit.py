@@ -1,13 +1,14 @@
 from typing import Tuple
 from const import LEVELS, GRID_SIZE, CORNERS
+from alpha_beta import AlphaBetaPrunning
 import numpy as np
 
 class Bridgit:
-    def __init__(self, level: str, player_num: int):
-        self.depth = LEVELS[level]
-        self.winner = None
+    def __init__(self, level: str, f_move: bool):
+        self.search = AlphaBetaPrunning(LEVELS[level], f_move)
+        self.f_move = f_move
         self.grid = np.zeros((GRID_SIZE, GRID_SIZE), np.int)
-        self.player_num = player_num
+        self.winner = None
         self.init_grid()
     
     def init_grid(self):
@@ -16,32 +17,17 @@ class Bridgit:
                 self.grid[i][::2] = 2
             else:
                 self.grid[i][1::2] = 1
-    
+        self.grid[CORNERS] = -1
+
     def is_valid(self, move: Tuple) -> bool:
         return (
             self.grid[move] and move not in CORNERS
-                and not (move[0] in (0, GRID_SIZE - 1) and self.player_num != 1)
-                and not (move[1] in (0, GRID_SIZE - 1) and self.player_num != 2)
+                and not (move[0] in (0, GRID_SIZE - 1) and not self.f_move)
+                and not (move[1] in (0, GRID_SIZE - 1) and self.f_move)
         )
     
-    def is_over(self) -> bool:
-        gridT = self.grid.transpose()
+    def set_move(self, move: Tuple[int, int]) -> None:
+        self.grid[move] = self.f_move + 1
 
-        for i in range(GRID_SIZE):
-            if np.all(self.grid[i] == 2):
-                self.winner = 2
-            if np.all(gridT[i] == 1):
-                self.winner = 1
-        
-        return (self.winner is not None)
-
-    def get_winner(self) -> int:
-        return self.winner
-                
-    def handle_move(self, move: Tuple) -> Tuple:
-        self.grid[move] = self.player_num
-        self.make_move()
-    
-    def make_move(self):
-        # find optimal move here
+    def get_move(self) -> Tuple[int, int]:
         pass
