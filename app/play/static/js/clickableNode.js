@@ -1,4 +1,4 @@
-class ClickableNode {
+export default class ClickableNode {
     constructor(topX, topY, size) {
         this.topX = topX;
         this.topY = topY;

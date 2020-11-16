@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <canvas width="300" height="300"></canvas>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.1/socket.io.js"></script>
+<script type="module" src="{{ url_for('play.static', filename='js/index.js') }}"></script>
+{% endblock %}

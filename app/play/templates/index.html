@@ -1,22 +1,18 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Bridg-It</title>
-	<meta lang="en" charset="utf-8">
-	<link rel="stylesheet" href="{{ url_for('play.static', filename='css/style.css') }}"/>
-</head>
-<body>
-	<header class="header">Bridg-It</header>
-	<section class="game-content">
-		<nav class="menu">
-			<button id="low">Low</button>
-			<button id="midlle">Middle</button>
-			<button id="hard">Hight</button>
-		</nav>
-		<canvas id="game-board">Sorry, but something went wrong</canvas>
-	</section>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.1/socket.io.js"></script>
-	<script src="{{ url_for('play.static', filename='js/index.js') }}"></script>
-	<footer class="footer">Vadym Kichur, lab4 (TA)</footer>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block content %}
+<form id="index" method="POST">
+	<div class="diff-buttons">
+		<button id="easy" name="diff-button" value="easy">Easy</button>
+		<button id="medium" name="diff-button" value="medium">Medium</button>
+		<button id="hard" name="diff-button" value="hard">Hard</button>
+	</div>
+	<div class="radio-buttons">
+		<p>Who moves first?</p>
+		<input id="player" type="radio" name="f-move" checked>
+		<label for="player">Player</label>
+		<input id="bot" type="radio" name="f-move">
+		<label for="bot">Bot</label>
+	</div>
+</form>
+{% endblock %}

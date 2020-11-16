@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Bridg-It</title>
+    <meta lang="en" charset="utf-8">
+    <link rel="stylesheet" href="{{ url_for('play.static', filename='css/style.css') }}"/>
+</head>
+<body>
+	<header class="header">Bridg-It</header>
+	<section class="main-content">{% block content %}{% endblock %}</section>
+    <footer class="footer">Vadym Kichur, 2020</footer>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
