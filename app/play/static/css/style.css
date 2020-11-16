@@ -9,22 +9,42 @@ body {
 }
 
 .header {
-    width: 100%;
-    height: 15%;
-    background-color: red;
-
+    font-size: 40px;
+    padding: 75px 0;
+    font-weight: bold;
+    text-align: center;
 }
 
-.game-content {
+.main-content {
     display: flex;
-    width: 100%;
-    height: 70%;
     justify-content: center;
+    align-content:  center;
+    text-align: center;
 }
 
-.footer {
-    width: 100%;
-    height: 15%;
-    background-color: gray;
+.diff-buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
 }
 
+.diff-buttons button {
+    padding: 40px 100px;
+    margin-bottom: 15px;
+    outline: none;
+    border-radius: 5px;
+    border: 1px solid #333;
+}
+
+.diff-buttons button:hover{
+    background-color: #555;
+}
+
+.radio-buttons {
+    padding: 60px 0;
+}
+
+.radio-buttons p {
+    font-size: 25px;
+    font-weight: bold;
+}

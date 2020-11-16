@@ -1,18 +1,20 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<form id="index" method="POST">
-	<div class="diff-buttons">
-		<button id="easy" name="diff-button" value="easy">Easy</button>
-		<button id="medium" name="diff-button" value="medium">Medium</button>
-		<button id="hard" name="diff-button" value="hard">Hard</button>
+	<div class="form-wrapper">
+		<form id="index" method="POST">
+			<div class="diff-buttons">
+				<button id="easy" name="diff-button" value="easy">Easy</button>
+				<button id="medium" name="diff-button" value="medium">Medium</button>
+				<button id="hard" name="diff-button" value="hard">Hard</button>
+			</div>
+			<div class="radio-buttons">
+				<p>Who moves first?</p>
+				<input id="player" type="radio" name="f-move" checked value="1">
+				<label for="player">Player</label>
+				<input id="bot" type="radio" name="f-move" value="0">
+				<label for="bot">Bot</label>
+			</div>
+		</form>
 	</div>
-	<div class="radio-buttons">
-		<p>Who moves first?</p>
-		<input id="player" type="radio" name="f-move" checked>
-		<label for="player">Player</label>
-		<input id="bot" type="radio" name="f-move">
-		<label for="bot">Bot</label>
-	</div>
-</form>
 {% endblock %}

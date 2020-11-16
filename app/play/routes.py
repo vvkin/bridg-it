@@ -7,7 +7,7 @@ from .bridgit import Bridgit
 def index():
     if request.method == 'POST':
         level = request.form['diff-button']
-        f_move = request.form['f-move']
+        f_move = int(request.form['f-move'])
         g.game = Bridgit(level, f_move)
         return redirect(url_for('play.play_game'))
     
