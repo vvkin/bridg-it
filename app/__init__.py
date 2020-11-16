@@ -2,6 +2,7 @@ from flask import Flask, session
 from flask_socketio import SocketIO
 
 socketio = SocketIO()
+games = {}
 
 def create_app(debug=False):
     app = Flask(__name__)

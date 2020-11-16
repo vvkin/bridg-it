@@ -1,46 +1,43 @@
 'use strict';
 
-import clickableNode from './clickableNode.js';
+import ClickableNode from './clickableNode.js';
 
-document.addEventListener('DOMContentLoaded', function () {
-    const socket = io.connect('http://' + document.domain + ':' + location.port);
-    console.log('connected');
+document.addEventListener('DOMContentLoaded', () => {
+    const socket = io.connect('http://' + document.domain + ':' + location.port + '/play');
     const canvas = document.querySelector('canvas');
     const ctx = canvas.getContext('2d');
-    const offset = 500;
-    let clickableNodes = getNodes();
-    let fMove = true; // player moves first (for now only)
+    
+    const canvasLeft = canvas.offsetLeft + canvas.clientLeft;
+    const canvasTop = canvas.offsetTop + canvas.clientTop;
+    const offset = 50;
+    const fieldSize = 11;
+    
+    let moveNow = false;
+    const clickableNodes = getNodes(fieldSize, offset);
 
-    document.querySelectorAll('.menu button').forEach(item => {
-        item.addEventListener('click', event => {
-            console.log('clicked');
-            socket.emit('new game');
-        })
-    });
-
-    socket.on('connect', function () {
-        console.log('connect');
-    });
-
-    canvas.addEventListener('click', event => {
-        console.log('canvas click');
-        return 1;
-    });
-
-    socket.on('draw field', fieldSize => {
-        console.log('draw field');
-        clickableNodes = getNodes(fieldSize, offset);
+    socket.on('draw field', (data) => {
+        moveNow = data.moveNow;
         drawField(ctx, fieldSize, offset);
     });
+    
+    canvas.addEventListener('click', event => {
+        if (moveNow) {
+            const x = event.pageX - canvasLeft;
+            const y = event.pageY - canvasTop;
 
-    /*
-    socket.on('valid move', move => {
-        makeMove(move, fMove);
+            for (const node of clickableNodes){
+                if (node.hitTest(x, y, offset)) {
+                    socket.emit('player move', (node.topX, node.topY));
+                    socket.on('valid move', () => {
+                        makeMove(node.topX, node.topY, moveNow);
+                        moveNow != moveNow;
+                    });
+                }
+            }
+        }
     });
 
-    socket.on('bot move', move => {
-        makeMove(move, !fMove);
-    });*/
+    
 });
 
 function getNodes(fieldSize, offset) {
@@ -48,7 +45,7 @@ function getNodes(fieldSize, offset) {
 
     for (let i = 0; i < fieldSize; ++i) {
         for (let j = (i % 2); j < fieldSize; j += 2) {
-            clickableNodes.push(clickableNode(i * offset, 2 * j * offset, offset));
+            clickableNodes.push(new ClickableNode(i * offset, 2 * j * offset, offset));
         }
     }
 
