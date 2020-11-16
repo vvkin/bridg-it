@@ -1,13 +1,15 @@
 export default class ClickableNode {
-    constructor(topX, topY, size) {
-        this.topX = topX;
-        this.topY = topY;
-        this.botX = topX + size;
-        this.botY = topY + size;
+    constructor(x, y, offset) {
+        this.x = x;        // positions in grid
+        this.y = y;
+        this.topX = x * offset; // positions on canvas
+        this.topY = y * offset;
+        this.botX = (x + 1) * offset;
+        this.botY = (y + 1) * offset;
     }
 
-    hitTest(x, y, area) {
-        return x > (topX * area) && x < (botX * area) &&
-            y > (topY * area) && y < (botX * area);
+    hitTest(x, y) {
+        return x > this.topX && x < this.botX &&
+            y > this.topY && y < this.botY;
     }
 }

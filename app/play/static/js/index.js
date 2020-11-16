@@ -16,9 +16,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let moveNow = false;
     const clickableNodes = getNodes(fieldSize, offset);
 
-    socket.on('draw field', (data) => {
+    socket.on('draw field', data => {
         moveNow = data.moveNow;
         drawField(ctx, fieldSize, offset, radius);
+    });
+
+    socket.on('bot move', data => {
+        /* logic here */
     });
     
     canvas.addEventListener('click', event => {
@@ -27,8 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const y = event.pageY - canvasTop;
 
             for (const node of clickableNodes){
-                if (node.hitTest(x, y, offset)) {
-                    socket.emit('player move', (node.topX, node.topY));
+                if (node.hitTest(x, y)) {
+                    socket.emit('player move', (node.x, node.y)); // indides in grid
                     socket.on('valid move', () => {
                         makeMove(node.topX, node.topY, moveNow);
                         moveNow != moveNow;
@@ -38,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    
 });
 
 function getNodes(fieldSize, offset) {
@@ -46,7 +49,7 @@ function getNodes(fieldSize, offset) {
 
     for (let i = 0; i < fieldSize; ++i) {
         for (let j = (i % 2); j < fieldSize; j += 2) {
-            clickableNodes.push(new ClickableNode(i * offset, 2 * j * offset, offset));
+            clickableNodes.push(new ClickableNode(i, j, offset));
         }
     }
 
@@ -67,4 +70,8 @@ function drawField(ctx, fieldSize, offset, radius) {
         }
     }
 };
+
+function makeMove(x, y, fMove) {
+    /* logic here */
+}
 
