@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvasLeft = canvas.offsetLeft + canvas.clientLeft;
     const canvasTop = canvas.offsetTop + canvas.clientTop;
     const offset = 50;
+    const radius = 7;
     const fieldSize = 11;
     
     let moveNow = false;
@@ -17,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.on('draw field', (data) => {
         moveNow = data.moveNow;
-        drawField(ctx, fieldSize, offset);
+        drawField(ctx, fieldSize, offset, radius);
     });
     
     canvas.addEventListener('click', event => {
@@ -52,17 +53,18 @@ function getNodes(fieldSize, offset) {
     return clickableNodes;
 }
 
-function drawField(ctx, fieldSize, offset) {
-    ctx.beginPath();
+function drawField(ctx, fieldSize, offset, radius) {
+    const blueColor = '#0000FF';
+    const redColor = '#FF0000';
 
     for (let i = 0; i < fieldSize; ++i) {
         for(let j = !(i % 2); j < fieldSize; j += 2) {
-            ctx.fillStyle = '#123456';
-            ctx.arc(offset/2, offset/2, offset/2, 0, 2*Math.PI);
+            ctx.beginPath();
+            ctx.fillStyle = (i % 2) ? blueColor: redColor;
+            ctx.arc(i*offset + radius, j*offset + radius, radius, 0, 2*Math.PI);
             ctx.fill();
+            ctx.closePath();
         }
     }
-
-    ctx.closePath();
 };
 
