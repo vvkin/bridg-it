@@ -1,10 +1,10 @@
 LEVELS = {
-    'easy': 3,
+    'easy': 5,
     'medium': 6,
     'hard': 9
 }
 
-GRID_SIZE = 5 # 11 * 11 grid
+GRID_SIZE = 7 # 11 * 11 grid
 
 CORNERS = (
     (0, 0),

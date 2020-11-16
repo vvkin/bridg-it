@@ -83,8 +83,6 @@ class AlphaBetaPrunning:
     def __call__(self, state: np.ndarray):
         self.state = np.copy(state)
         self.move = None
-        fff = self.search(alpha=-np.inf, beta=np.inf)
-        print(fff)
 
     def update_state(self, move: Tuple[int, int], state_value: int) -> None:
         self.state[move] = state_value
@@ -93,8 +91,8 @@ class AlphaBetaPrunning:
         if AlphaBetaPrunning.is_terminal(self.state, 0):
             return -1
         
-        #if depth > self.depth:
-        #    return self.heuristic()
+        if depth > self.depth:
+            return self.heuristic()
         minimax = -np.inf
 
         for move in self.get_moves(1): # max player moves first
@@ -104,14 +102,10 @@ class AlphaBetaPrunning:
 
             if minv > minimax:
                 minimax = minv
-                #if not depth: self.move = move
+                self.move = move
             
             if minimax >= beta: return minimax
-            #alpha = max(minimax, alpha)
-
-            if minimax > alpha:
-                alpha = minimax
-                if not depth: self.move = move
+            alpha = max(minimax, alpha)
 
         return minimax 
         
@@ -119,8 +113,8 @@ class AlphaBetaPrunning:
         if depth != 0 and AlphaBetaPrunning.is_terminal(self.state, 1):
             return 1
 
-        #if depth > self.depth:
-        #    return -self.heuristic()
+        if depth > self.depth:
+            return -self.heuristic()
         minimax = np.inf
 
         for move in self.get_moves(0): # min playes moves second
@@ -130,12 +124,9 @@ class AlphaBetaPrunning:
 
             if maxv < minimax:
                 minimax = maxv
-                #if not depth: self.move = move
+                self.move = move
             
             if minimax <= alpha: return minimax
-            if minimax < beta:
-                beta = minimax
-                if not depth: self.move = move
-            #beta = min(minimax, beta)
+            beta = min(minimax, beta)
         
         return minimax

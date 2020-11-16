@@ -8,9 +8,9 @@ from app import socketio
 def index():
     if request.method == 'POST':
         session['level'] = request.form['diff-button']
-        session['f_move'] = request.form['f-move']
+        session['f_move'] = int(request.form['f-move'])
         return redirect(url_for('play.play_game'))
-    return render_template('index.html')
+    else: return render_template('index.html')
 
 @play.route('/play')
 def play_game():
@@ -19,4 +19,3 @@ def play_game():
     if level != '' and f_move != '':
         return render_template('play.html')
     else: return redirect(url_for('play.index'))
-

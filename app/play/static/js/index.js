@@ -1,77 +1,89 @@
 'use strict';
 
 import ClickableNode from './clickableNode.js';
+import {BLUE_COLOR, RED_COLOR, FIELD_SIZE, OFFSET, RADIOUS, LINE_WIDTH} from './const.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const socket = io.connect('http://' + document.domain + ':' + location.port + '/play');
     const canvas = document.querySelector('canvas');
     const ctx = canvas.getContext('2d');
-    
-    const canvasLeft = canvas.offsetLeft + canvas.clientLeft;
-    const canvasTop = canvas.offsetTop + canvas.clientTop;
-    const offset = 50;
-    const radius = 7;
-    const fieldSize = 11;
-    
+
     let moveNow = false;
-    const clickableNodes = getNodes(fieldSize, offset);
+    const clickableNodes = getNodes();
 
-    socket.on('draw field', data => {
-        moveNow = data.moveNow;
-        drawField(ctx, fieldSize, offset, radius);
-    });
-
-    socket.on('bot move', data => {
-        /* logic here */
-    });
-    
     canvas.addEventListener('click', event => {
         if (moveNow) {
+            const canvasLeft = canvas.offsetLeft + canvas.clientLeft;
+            const canvasTop = canvas.offsetTop + canvas.clientTop;
             const x = event.pageX - canvasLeft;
             const y = event.pageY - canvasTop;
 
             for (const node of clickableNodes){
                 if (node.hitTest(x, y)) {
-                    socket.emit('player move', (node.x, node.y)); // indides in grid
-                    socket.on('valid move', () => {
-                        makeMove(node.topX, node.topY, moveNow);
-                        moveNow != moveNow;
-                    });
+                    socket.emit('validate move', {'x': node.x, 'y': node.y}); // indides in grid
+                    break;
                 }
             }
         }
     });
 
+    socket.on('draw field', data => {
+        moveNow = data.moveNow;
+        drawField(ctx);
+    });
+
+    socket.on('player move', data => {
+        console.log('player move');
+        makeMove(ctx, data.x, data.y, moveNow);
+        moveNow = !moveNow;
+    });
+
+    socket.on('bot move', data => {
+        console.log('bot move');
+        makeMove(ctx, data.x, data.y, moveNow);
+        moveNow = !moveNow;
+    });
+
+    socket.on('game over', data => {
+        socket.disconnect();
+        alert(`Player ${data.winner} won!`);
+    })
 });
 
-function getNodes(fieldSize, offset) {
+function getNodes() {
     let clickableNodes = [];
 
-    for (let i = 0; i < fieldSize; ++i) {
-        for (let j = (i % 2); j < fieldSize; j += 2) {
-            clickableNodes.push(new ClickableNode(i, j, offset));
+    for (let i = 0; i < FIELD_SIZE; ++i) {
+        for (let j = (i % 2); j < FIELD_SIZE; j += 2) {
+            clickableNodes.push(new ClickableNode(i, j, OFFSET, RADIOUS));
         }
     }
 
     return clickableNodes;
 }
 
-function drawField(ctx, fieldSize, offset, radius) {
-    const blueColor = '#0000FF';
-    const redColor = '#FF0000';
-
-    for (let i = 0; i < fieldSize; ++i) {
-        for(let j = !(i % 2); j < fieldSize; j += 2) {
+function drawField(ctx) {
+    for (let i = 0; i < FIELD_SIZE; ++i) {
+        for(let j = !(i % 2); j < FIELD_SIZE; j += 2) {
             ctx.beginPath();
-            ctx.fillStyle = (i % 2) ? blueColor: redColor;
-            ctx.arc(i*offset + radius, j*offset + radius, radius, 0, 2*Math.PI);
+            ctx.fillStyle = (i % 2) ? BLUE_COLOR: RED_COLOR;
+            ctx.arc(i*OFFSET + RADIOUS, j*OFFSET + RADIOUS, RADIOUS, 0, 2*Math.PI);
             ctx.fill();
-            ctx.closePath();
         }
     }
 };
 
-function makeMove(x, y, fMove) {
-    /* logic here */
+function makeMove(ctx, y, x, fMove) {
+    ctx.beginPath();
+    const offsetX = (fMove && !(x & 1) || !fMove && (x & 1)) ? OFFSET : 0;
+    const offsetY = (fMove && (x & 1) || !fMove && !(x & 1)) ? OFFSET : 0;
+    x = x * OFFSET + RADIOUS;
+    y = y * OFFSET + RADIOUS;
+    ctx.strokeStyle = (fMove) ? BLUE_COLOR : RED_COLOR;
+    ctx.moveTo(x - offsetX, y - offsetY);
+    ctx.lineWidth = LINE_WIDTH;
+    ctx.lineTo(x + offsetX, y + offsetY);
+    ctx.stroke();
+    ctx.closePath();
 }
 
