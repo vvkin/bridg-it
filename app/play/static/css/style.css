@@ -9,43 +9,52 @@ body {
 }
 
 .header {
-    font-size: 40px;
-    padding: 75px 0;
+    padding: 50px 0;
     font-weight: bold;
+    font-size: 40px;
     text-align: center;
 }
 
-.main-content {
+.level {
     display: flex;
-    justify-content: center;
-    align-content:  center;
-    text-align: center;
-}
-
-.diff-buttons {
-    display: flex;
-    flex-direction: column;
+    align-items: center;
     justify-content: space-around;
 }
 
-.diff-buttons button {
-    padding: 40px 100px;
-    margin-bottom: 15px;
-    outline: none;
-    border-radius: 5px;
-    border: 1px solid #333;
+.level button{
+    background-color: white;
+    color: black;
+    padding: 32px 32px;
+    font-size: 24px;
+    width: 250px;
+    margin: 10px 0px;
+    border-radius: 8px;
+    border: 2px solid black;
+    cursor: pointer;
 }
 
-.diff-buttons button:hover{
-    background-color: #555;
+.level button:hover{
+    background-color: #999;
 }
 
-.radio-buttons {
-    padding: 60px 0;
+.question {
+    font-size: 35px;
+    text-align: center;
+    font-weight: bold;
+    padding: 50px 0;
 }
 
-.radio-buttons p {
-    font-size: 25px;
+.move-order {
+    display: flex;
+    justify-content: space-between;
+    padding: 100px;
+    font-size: 30px;
+    text-align: center;
+}
+
+.beginner {
+    font-size: 50px;
+    color: blue;
     font-weight: bold;
 }
 

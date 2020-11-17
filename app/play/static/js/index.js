@@ -21,8 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const node of clickableNodes){
                 if (node.hitTest(x, y)) {
                     socket.emit('validate move', {'x': node.x, 'y': node.y}); // indides in grid
-                    socket.on('player move', (playerIdx) => {
-                        makeMove(ctx, node.x, node.y, playerIdx);
+                    socket.on('player move', (color) => {
+                        makeMove(ctx, node.x, node.y, color);
                         moveNow = false;
                     });
                     break;
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     socket.on('bot move', data => {
-        makeMove(ctx, data.x, data.y, data.playerIdx);
+        makeMove(ctx, data.x, data.y, data.color);
         moveNow = true;
     });
 

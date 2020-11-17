@@ -4,9 +4,9 @@ from .alpha_beta import AlphaBetaPrunning
 import numpy as np
 
 class Bridgit:
-    def __init__(self, level: str, f_move: bool):
-        self.search = AlphaBetaPrunning(LEVELS[level], f_move)
-        self.f_move = f_move
+    def __init__(self, level: str, f_move: bool, color: bool):
+        self.f_move = color if f_move else not color
+        self.search = AlphaBetaPrunning(LEVELS[level], self.f_move)
         self.grid = np.zeros((GRID_SIZE, GRID_SIZE), np.int)
         self.winner = None
         self.init_grid()

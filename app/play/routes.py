@@ -7,8 +7,9 @@ from app import socketio
 @play.route('/', methods=('GET', 'POST'))
 def index():
     if request.method == 'POST':
-        session['level'] = request.form['diff-button']
-        session['f_move'] = int(request.form['f-move'])
+        session['level'] = request.form['level']
+        session['f_move'] = request.form['f-move']
+        session['color'] = request.form['color']
         return redirect(url_for('play.play_game'))
     else: return render_template('index.html')
 

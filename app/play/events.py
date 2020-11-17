@@ -6,15 +6,16 @@ from app.play.bridgit import Bridgit
 @socketio.on('connect', namespace='/play')
 def on_connect():
     user_id = request.sid
-    game = Bridgit(session['level'], session['f_move'])
+    level = session['level']
+    f_move = int(session['f_move'])
+    color = int(session['color'])
+    game = Bridgit(level, f_move, color)
     games[user_id] = game
-    emit('draw field', {'moveNow': games[user_id].f_move})
+    emit('draw field', {'moveNow': f_move})
 
-    print(game.f_move)
-
-    if not session['f_move']: # now bot turn (first move)
+    if not f_move: # now bot turn (first move)
         bot_move = game.get_move()
-        data = {'x': bot_move[0], 'y': bot_move[1], 'playerIdx': 1}
+        data = {'x': bot_move[0], 'y': bot_move[1], 'color': color}
         emit('bot move', data)
 
 @socketio.on('validate move', namespace='/play')
@@ -31,7 +32,7 @@ def on_validate_move(data):
             emit('game is over', {'winner': game.winner})
         else:
             bot_move = game.get_move()
-            data = {'x': bot_move[0], 'y': bot_move[1], 'playerIdx': not game.f_move}
+            data = {'x': bot_move[0], 'y': bot_move[1], 'color': not game.f_move}
             emit('bot move', data)
 
             if game.is_over(): 
@@ -42,4 +43,5 @@ def on_disconnect():
     user_id = request.sid
     del session['f_move']
     del session['level']
+    del session['color']
     del games[user_id]
