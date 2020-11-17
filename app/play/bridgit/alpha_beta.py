@@ -6,9 +6,9 @@ from .const import GRID_SIZE
 class AlphaBetaPrunning:
     def __init__(self, depth: int, f_move: bool):
         self.depth = depth
+        self.f_move = not f_move
         self.move = None
-        self.search = self.min if \
-            f_move else self.max
+        self.search = self.max
     
     @staticmethod
     def is_valid_cell(pos: Tuple[int, int]) -> bool:
@@ -96,7 +96,7 @@ class AlphaBetaPrunning:
             return self.heuristic()
         minimax = -np.inf
 
-        for move in self.get_moves(1): # max player moves first
+        for move in self.get_moves(self.f_move): # max player moves first
             self.update_state(move, 1)
             minv = self.min(alpha, beta, depth+1)
             self.update_state(move, 0)
@@ -105,7 +105,7 @@ class AlphaBetaPrunning:
                 minimax = minv
                 if not depth: self.move = move
             
-            #if minimax >= beta: return minimax
+            if minimax >= beta: return minimax
             alpha = max(minimax, alpha)
 
         return minimax 
@@ -118,16 +118,14 @@ class AlphaBetaPrunning:
             return -self.heuristic()
         minimax = np.inf
 
-        for move in self.get_moves(0): # min playes moves second
+        for move in self.get_moves(self.f_move): # min playes moves second
             self.update_state(move, 2)
             maxv = self.max(alpha, beta, depth+1)
             self.update_state(move, 0)
 
-            if maxv < minimax:
-                minimax = maxv
-                if not depth: self.move = move
+            if maxv < minimax: minimax = maxv
             
-            #if minimax <= alpha: return minimax
+            if minimax <= alpha: return minimax
             beta = min(minimax, beta)
         
         return minimax

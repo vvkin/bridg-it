@@ -26,7 +26,8 @@ def on_validate_move(data):
 
     if game.is_valid(move):
         game.set_move(move)
-        emit('player move', game.f_move)
+        data = {'x': move[0], 'y': move[1], 'color': game.f_move}
+        emit('player move', data)
 
         if game.is_over(): 
             emit('game is over', {'winner': game.winner})
