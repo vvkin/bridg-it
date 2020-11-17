@@ -5,7 +5,7 @@ import numpy as np
 
 class Bridgit:
     def __init__(self, level: str, f_move: bool):
-        self.search = AlphaBetaPrunning(LEVELS[level], not f_move)
+        self.search = AlphaBetaPrunning(LEVELS[level], f_move)
         self.f_move = f_move
         self.grid = np.zeros((GRID_SIZE, GRID_SIZE), np.int)
         self.winner = None

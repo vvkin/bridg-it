@@ -7,8 +7,8 @@ class AlphaBetaPrunning:
     def __init__(self, depth: int, f_move: bool):
         self.depth = depth
         self.move = None
-        self.search = self.max if \
-            f_move else self.min
+        self.search = self.min if \
+            f_move else self.max
     
     @staticmethod
     def is_valid_cell(pos: Tuple[int, int]) -> bool:
@@ -83,6 +83,7 @@ class AlphaBetaPrunning:
     def __call__(self, state: np.ndarray):
         self.state = np.copy(state)
         self.move = None
+        self.search(-np.inf, np.inf)
 
     def update_state(self, move: Tuple[int, int], state_value: int) -> None:
         self.state[move] = state_value
@@ -102,9 +103,9 @@ class AlphaBetaPrunning:
 
             if minv > minimax:
                 minimax = minv
-                self.move = move
+                if not depth: self.move = move
             
-            if minimax >= beta: return minimax
+            #if minimax >= beta: return minimax
             alpha = max(minimax, alpha)
 
         return minimax 
@@ -112,7 +113,7 @@ class AlphaBetaPrunning:
     def min(self, alpha, beta, depth=0) -> float:
         if depth != 0 and AlphaBetaPrunning.is_terminal(self.state, 1):
             return 1
-
+    
         if depth > self.depth:
             return -self.heuristic()
         minimax = np.inf
@@ -124,9 +125,9 @@ class AlphaBetaPrunning:
 
             if maxv < minimax:
                 minimax = maxv
-                self.move = move
+                if not depth: self.move = move
             
-            if minimax <= alpha: return minimax
+            #if minimax <= alpha: return minimax
             beta = min(minimax, beta)
         
         return minimax

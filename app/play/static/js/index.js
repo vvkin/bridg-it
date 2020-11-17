@@ -21,6 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const node of clickableNodes){
                 if (node.hitTest(x, y)) {
                     socket.emit('validate move', {'x': node.x, 'y': node.y}); // indides in grid
+                    socket.on('player move', (playerIdx) => {
+                        makeMove(ctx, node.x, node.y, playerIdx);
+                        moveNow = false;
+                    });
                     break;
                 }
             }
@@ -32,22 +36,14 @@ document.addEventListener('DOMContentLoaded', () => {
         drawField(ctx);
     });
 
-    socket.on('player move', data => {
-        console.log('player move');
-        makeMove(ctx, data.x, data.y, moveNow);
-        moveNow = !moveNow;
-    });
-
     socket.on('bot move', data => {
-        console.log('bot move');
-        makeMove(ctx, data.x, data.y, moveNow);
-        moveNow = !moveNow;
+        makeMove(ctx, data.x, data.y, data.playerIdx);
+        moveNow = true;
     });
 
-    socket.on('game over', data => {
-        socket.disconnect();
+    socket.on('game is over', data => {
         alert(`Player ${data.winner} won!`);
-    })
+    });
 });
 
 function getNodes() {
@@ -86,4 +82,3 @@ function makeMove(ctx, y, x, fMove) {
     ctx.stroke();
     ctx.closePath();
 }
-
