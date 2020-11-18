@@ -89,7 +89,6 @@ input[type="radio"] {
     text-align: center;
 }
 
-
 .choice-content {
     padding: 50px 0;
     text-align: center;
@@ -118,6 +117,10 @@ input[type="radio"] {
     width: 50px;
     margin: 20px 35px;
     position: absolute;
+    -webkit-user-select: none;
+    -moz-user-select: none; 
+    -ms-user-select: none; 
+    user-select: none;
 }
 
 #redo {

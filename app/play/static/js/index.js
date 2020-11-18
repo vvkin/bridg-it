@@ -6,8 +6,11 @@ import {BLUE_COLOR, RED_COLOR, FIELD_SIZE, OFFSET, RADIOUS, LINE_WIDTH} from './
 document.addEventListener('DOMContentLoaded', () => {
     const socket = io.connect('http://' + document.domain + ':' + location.port + '/play');
     const canvas = document.querySelector('canvas');
+    const canvasSize = OFFSET * (FIELD_SIZE - 1) + 2 * RADIOUS;
+    canvas.width = canvasSize;
+    canvas.height = canvasSize;
     const ctx = canvas.getContext('2d');
-
+   
     let moveNow = false;
     const clickableNodes = getNodes();
 
