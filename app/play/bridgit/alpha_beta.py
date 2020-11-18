@@ -6,7 +6,7 @@ import time
 class AlphaBetaPrunning:
     def __init__(self, depth: int, color_idx: bool):
         self.depth = depth
-        self.color_idx = color_idx # 1 - "blue", 2 - "red"
+        self.color_idx = color_idx
         self.move = None
     
     @staticmethod
@@ -53,62 +53,74 @@ class AlphaBetaPrunning:
         converse = AlphaBetaPrunning.is_way(state, move, False)
         return direct and converse
 
-    def get_moves(self, color_idx: bool) -> Generator[Tuple[int, int], None, None]:
-        di, dj = not color_idx, color_idx
-        for i in range(di, GRID_SIZE - di):
-            for j in range(dj, GRID_SIZE - dj):
-                if not self.state[i, j]:
-                    yield (i, j)
-    
     def heuristic(self, color_idx: bool) -> float:
         multiplier = 1 if color_idx == self.color_idx else -1
         return multiplier * np.random.rand()
-             
+                 
+    def get_moves(self, state) -> None:
+        blue_moves, red_moves = set(), set()
+        
+        for i in range(GRID_SIZE):
+            for j in range(GRID_SIZE):
+                if not state[i, j]:
+                    if i and i != GRID_SIZE - 1:
+                        red_moves.add((i, j))
+                    if j and j != GRID_SIZE - 1:
+                        blue_moves.add((i, j))
+
+        if self.color_idx: self.moves = blue_moves, red_moves
+        else: self.moves = red_moves, blue_moves
+    
     def __call__(self, state: np.ndarray):
-        self.state = np.copy(state)
         self.move = None
+        self.get_moves(state)
         start = time.time()
-        self.max(None, -np.inf, np.inf)
+        self.max(state, None, -np.inf, np.inf)
         print(time.time() - start)
 
-    def update_state(self, move: Tuple[int, int], state_value: int) -> None:
-        self.state[move] = state_value
+    def update_moves(self, move: Tuple[int, int], color_idx: bool, add: bool) -> None:
+        if add: self.moves[color_idx].add(move)
+        else: self.moves[color_idx].remove(move)
     
-    def max(self, prev, alpha, beta, depth=0) -> float:
+    def max(self, state, prev, alpha, beta, depth=0) -> float:
         if depth > self.depth: 
             return self.heuristic(self.color_idx)
 
-        if AlphaBetaPrunning.is_terminal(self.state, prev):
+        if AlphaBetaPrunning.is_terminal(state, prev):
             return -1
-
+        
         minimax = -np.inf
-        for move in self.get_moves(self.color_idx): # max player moves first
-            self.update_state(move, (not self.color_idx) + 1)
-            minimax = max(minimax, self.min(move, alpha, beta, depth+1))
-            self.update_state(move, 0)
+        for move in self.moves[0]:
+            self.update_moves(move, 0, 0)
+            state[move] = self.color_idx + 1
+            minimax = max(minimax, self.min(state, move, alpha, beta, depth+1))
+            self.update_moves(move, 0, 1)
+            state[move] = 0
             
             if minimax >= beta: return minimax
             if minimax > alpha:
                 alpha = minimax
                 if not depth: 
-                    #print(minimax, move)
+                    print(minimax)
                     self.move = move
         
         return minimax 
         
-    def min(self, prev, alpha, beta, depth=0) -> float:
+    def min(self, state, prev, alpha, beta, depth=0) -> float:
         if depth > self.depth:
             return self.heuristic(not self.color_idx)
 
-        if AlphaBetaPrunning.is_terminal(self.state, prev):
+        if AlphaBetaPrunning.is_terminal(state, prev):
             return 1
-    
+        
         minimax = np.inf
-        for move in self.get_moves(not self.color_idx): # min playes moves second
-            self.update_state(move, self.color_idx + 1)
-            minimax = min(minimax, self.max(move, alpha, beta, depth+1))
-            self.update_state(move, 0)
-            
+        for move in self.moves[1]: # min playes moves second
+            self.update_moves(move, 1, 0)
+            state[move] = (not self.color_idx) + 1
+            minimax = min(minimax, self.max(state, move, alpha, beta, depth+1))
+            self.update_moves(move, 1, 1)
+            state[move] = 0
+           
             if minimax <= alpha: return minimax
             beta = min(minimax, beta)
 
