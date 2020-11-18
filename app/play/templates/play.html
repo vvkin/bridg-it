@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <a class="redo" href="{{ url_for('play.play_game') }}">
+        <img id="redo" class="util" src="{{ url_for('play.static', filename='img/redo.png') }}"/>
+    </a>
+    <a class="back" href="{{ url_for('play.index') }}">
+        <img id="back" class="util" src="{{ url_for('play.static', filename='img/back.png') }}"/>
+    </a>
     <div class="canvas-wrapper">
         <canvas width="514" height="514"></canvas>
     </div>

@@ -113,3 +113,13 @@ input[type="radio"] {
     justify-content: center;
     align-items: center;
 }
+
+.util {
+    width: 50px;
+    margin: 20px 35px;
+    position: absolute;
+}
+
+#redo {
+    right: 0;
+}
