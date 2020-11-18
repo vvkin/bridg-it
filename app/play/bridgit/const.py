@@ -1,7 +1,7 @@
 LEVELS = {
     'easy': 3,
-    'medium': 2,
-    'hard': 3
+    'medium': 4,
+    'hard': 5,
 }
 
 GRID_SIZE = 11 # 11 * 11 grid

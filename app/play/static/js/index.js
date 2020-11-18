@@ -42,8 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
         moveNow = true;
     });
 
-    socket.on('game is over', data => {
-        alert(`Player ${data.winner} won!`);
+    socket.on('game is over', winner => {
+        alert(`${(winner) ? 'Blue' : 'Red'} player won!`);
     });
 });
 

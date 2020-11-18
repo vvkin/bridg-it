@@ -26,18 +26,18 @@ def on_validate_move(data):
 
     if game.is_valid(move):
         game.set_move(move)
-        data = {'x': move[0], 'y': move[1], 'color': game.f_move}
+        data = {'x': move[0], 'y': move[1], 'color': game.color_idx}
         emit('player move', data)
 
-        if game.is_over(): 
-            emit('game is over', {'winner': game.winner})
+        if game.is_over(game.color_idx):
+            emit('game is over', game.winner)
         else:
             bot_move = game.get_move()
-            data = {'x': bot_move[0], 'y': bot_move[1], 'color': not game.f_move}
+            data = {'x': bot_move[0], 'y': bot_move[1], 'color': not game.color_idx}
             emit('bot move', data)
 
-            if game.is_over(): 
-                emit('game is over', {'winner': game.winner})
+            if game.is_over(not game.color_idx):
+                emit('game is over', game.winner)
 
 @socketio.on('disconnec', namespace='/play')
 def on_disconnect():

@@ -31,8 +31,6 @@ class AlphaBetaPrunning:
 
     @staticmethod
     def is_terminal(state: np.ndarray, color_idx: bool) -> bool:
-        if not np.any(state == 0): return True # tie, there are not any moves
-
         stop_condition = lambda x, y: (
             (x == GRID_SIZE - 1 and color_idx) or 
             (y == GRID_SIZE - 1 and not color_idx)
@@ -45,26 +43,24 @@ class AlphaBetaPrunning:
                 stack = [(i, 0)]
             else: continue
         
-            visited = np.zeros(GRID_SIZE ** 2 + 100, np.bool)
+            visited = np.zeros((GRID_SIZE, GRID_SIZE), np.bool)
             while stack:
                 source = stack.pop()
                 if stop_condition(*source): 
                     return True
                 
                 neighbors = AlphaBetaPrunning.get_neighbors(*source)
-                for (x, y) in neighbors:
-                    dest = x * 10 + y
-                    if state[x, y] == (not color_idx) + 1 and not visited[dest]:
-                        stack.append((x, y))
+                for dest in neighbors:
+                    if state[dest] == (not color_idx) + 1 and not visited[dest]:
+                        stack.append(dest)
                         visited[dest] = True
 
         return False
     
     @staticmethod
-    def get_chain(state: np.ndarray, move: Tuple[int,int], color_idx: bool) -> List[int]:
-        """Return longest chain made by current player"""
+    def get_chain(state: np.ndarray, color_idx: bool) -> int:
         pass
-
+        
     def get_moves(self, color_idx: bool) -> Generator[Tuple[int, int], None, None]:
         di, dj = not color_idx, color_idx
         for i in range(di, GRID_SIZE - di):
