@@ -32,14 +32,16 @@ document.addEventListener('DOMContentLoaded', () => {
         drawField(ctx);
     });
 
+    socket.on('bot move', data => {
+        console.log('bot');
+        makeMove(ctx, data.x, data.y, data.color);
+        moveNow = true;
+    });
+
     socket.on('player move', (data) => {
         makeMove(ctx, data.x, data.y, data.color);
         moveNow = false;
-    });
-
-    socket.on('bot move', data => {
-        makeMove(ctx, data.x, data.y, data.color);
-        moveNow = true;
+        socket.emit('is over');
     });
 
     socket.on('game is over', winner => {

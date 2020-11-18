@@ -1,5 +1,5 @@
 LEVELS = {
-    'easy': 3,
+    'easy': 2,
     'medium': 4,
     'hard': 5,
 }

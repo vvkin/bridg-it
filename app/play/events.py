@@ -29,15 +29,20 @@ def on_validate_move(data):
         data = {'x': move[0], 'y': move[1], 'color': game.color_idx}
         emit('player move', data)
 
-        if game.is_over(game.color_idx):
-            emit('game is over', game.winner)
-        else:
-            bot_move = game.get_move()
-            data = {'x': bot_move[0], 'y': bot_move[1], 'color': not game.color_idx}
-            emit('bot move', data)
+@socketio.on('is over', namespace='/play')
+def on_is_over():
+    user_id = request.sid
+    game = games[user_id]
 
-            if game.is_over(not game.color_idx):
-                emit('game is over', game.winner)
+    if game.is_over(game.color_idx): # player won
+        emit('game is over', game.winner)
+    else:
+        bot_move = game.get_move()
+        data = {'x': bot_move[0], 'y': bot_move[1], 'color': not game.color_idx}
+        emit('bot move', data)
+
+        if game.is_over(not game.color_idx): # bot won
+            emit('game is over', game.winner)
 
 @socketio.on('disconnec', namespace='/play')
 def on_disconnect():
