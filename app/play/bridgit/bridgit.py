@@ -8,6 +8,7 @@ class Bridgit:
         self.color_idx = color if f_move else not color
         self.search = AlphaBetaPrunning(LEVELS[level], not self.color_idx)
         self.grid = np.zeros((GRID_SIZE, GRID_SIZE), np.int)
+        self.last_move = None
         self.winner = None
         self.init_grid()
     
@@ -28,12 +29,14 @@ class Bridgit:
                 and not (move[1] in (0, GRID_SIZE - 1) and self.color_idx)
         )
     
-    def is_over(self, color_idx: bool) -> bool:
-        if AlphaBetaPrunning.is_terminal(self.grid, color_idx):
-            self.winner = color_idx
+    def is_over(self, move: Tuple[int, int]=None) -> bool:
+        move = move if (move is not None) else self.last_move
+        if AlphaBetaPrunning.is_terminal(self.grid, move):
+            self.winner = not (self.grid[move] - 1)
         return self.winner is not None
     
     def set_move(self, move: Tuple[int, int]) -> None:
+        self.last_move = move
         self.grid[move] = (not self.color_idx) + 1
        
     def get_move(self) -> Tuple[int, int]:
