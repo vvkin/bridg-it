@@ -13,11 +13,6 @@ def on_connect():
     games[user_id] = game
     emit('draw field', {'moveNow': f_move})
 
-    if not f_move: # now bot turn (first move)
-        bot_move = game.get_move()
-        data = {'x': bot_move[0], 'y': bot_move[1], 'color': color}
-        emit('bot move', data)
-
 @socketio.on('validate move', namespace='/play')
 def on_validate_move(data):
     user_id = request.sid
@@ -39,12 +34,11 @@ def on_is_over():
     else:
         bot_move = game.get_move()
         data = {'x': bot_move[0], 'y': bot_move[1], 'color': not game.color_idx}
-        emit('bot move', data)
-
         if game.is_over(not game.color_idx): # bot won
             emit('game is over', game.winner)
+        emit('bot move', data)
 
-@socketio.on('disconnec', namespace='/play')
+@socketio.on('disconnect', namespace='/play')
 def on_disconnect():
     user_id = request.sid
     del session['f_move']

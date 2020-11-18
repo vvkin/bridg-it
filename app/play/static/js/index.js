@@ -30,10 +30,12 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.on('draw field', data => {
         moveNow = data.moveNow;
         drawField(ctx);
+        if (!moveNow) { // request for bot move
+            socket.emit('is over');
+        }
     });
 
     socket.on('bot move', data => {
-        console.log('bot');
         makeMove(ctx, data.x, data.y, data.color);
         moveNow = true;
     });
@@ -45,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     socket.on('game is over', winner => {
+        socket.disconnect();
         alert(`${(winner) ? 'Blue' : 'Red'} player won!`);
     });
 });
