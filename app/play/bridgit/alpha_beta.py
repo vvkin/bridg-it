@@ -4,11 +4,10 @@ from typing import Tuple, List, Generator
 from .const import GRID_SIZE
 
 class AlphaBetaPrunning:
-    def __init__(self, depth: int, f_move: bool):
+    def __init__(self, depth: int, color_idx: bool):
         self.depth = depth
-        self.f_move = not f_move
+        self.color_idx = color_idx # 1 - "blue", 2 - "red"
         self.move = None
-        self.search = self.max
     
     @staticmethod
     def is_valid_cell(pos: Tuple[int, int]) -> bool:
@@ -31,18 +30,18 @@ class AlphaBetaPrunning:
         return neighbors
 
     @staticmethod
-    def is_terminal(state: np.ndarray, f_move: bool) -> bool:
+    def is_terminal(state: np.ndarray, color_idx: bool) -> bool:
         if not np.any(state == 0): return True # tie, there are not any moves
 
         stop_condition = lambda x, y: (
-            (x == GRID_SIZE - 1 and f_move) or 
-            (y == GRID_SIZE - 1 and not f_move)
+            (x == GRID_SIZE - 1 and color_idx) or 
+            (y == GRID_SIZE - 1 and not color_idx)
         )
 
         for i in range(GRID_SIZE):
-            if f_move and state[0, i] == 1:
+            if color_idx and state[0, i] == 1:
                 stack = [(0, i)]
-            elif not f_move and state[i, 0] == 2:
+            elif not color_idx and state[i, 0] == 2:
                 stack = [(i, 0)]
             else: continue
         
@@ -55,77 +54,68 @@ class AlphaBetaPrunning:
                 neighbors = AlphaBetaPrunning.get_neighbors(*source)
                 for (x, y) in neighbors:
                     dest = x * 10 + y
-                    if state[x, y] == (not f_move) + 1 and not visited[dest]:
+                    if state[x, y] == (not color_idx) + 1 and not visited[dest]:
                         stack.append((x, y))
                         visited[dest] = True
 
         return False
     
     @staticmethod
-    def get_chain(state: np.ndarray, move: Tuple[int,int], f_move: bool) -> List[int]:
+    def get_chain(state: np.ndarray, move: Tuple[int,int], color_idx: bool) -> List[int]:
         """Return longest chain made by current player"""
         pass
 
-    def get_moves(self, f_move: bool) -> Generator[Tuple[int, int], None, None]:
-        di, dj = not f_move, f_move
+    def get_moves(self, color_idx: bool) -> Generator[Tuple[int, int], None, None]:
+        di, dj = not color_idx, color_idx
         for i in range(di, GRID_SIZE - di):
             for j in range(dj, GRID_SIZE - dj):
                 if not self.state[i, j]:
                     yield (i, j)
 
-    def heuristic(self):#, move: Tuple[int, int], f_move: bool) -> float:
-        #max_chain = len(AlphaBetaPrunning.get_chain(self.state, 1))
-        #min_chain = len(AlphaBetaPrunning.get_chain(self.state, 0))
-        #heuristic = 1 / (abs(len(max_chain) - len(min_chain)) + 1)
-        #return heuristic if f_move else -heuristic
+    def heuristic(self) -> float:
         return np.random.rand()
         
     def __call__(self, state: np.ndarray):
         self.state = np.copy(state)
         self.move = None
-        self.search(-np.inf, np.inf)
+        self.max(-np.inf, np.inf)
 
     def update_state(self, move: Tuple[int, int], state_value: int) -> None:
         self.state[move] = state_value
     
     def max(self, alpha, beta, depth=0) -> float:
-        if AlphaBetaPrunning.is_terminal(self.state, 0):
+        if depth > self.depth: return self.heuristic()
+
+        if AlphaBetaPrunning.is_terminal(self.state, not self.color_idx):
             return -1
-        
-        if depth > self.depth:
-            return self.heuristic()
+
         minimax = -np.inf
-
-        for move in self.get_moves(self.f_move): # max player moves first
-            self.update_state(move, 1)
-            minv = self.min(alpha, beta, depth+1)
+        for move in self.get_moves(self.color_idx): # max player moves first
+            self.update_state(move, (not self.color_idx) + 1)
+            minimax = max(minimax, self.min(alpha, beta, depth+1))
             self.update_state(move, 0)
-
-            if minv > minimax:
-                minimax = minv
-                if not depth: self.move = move
             
             if minimax >= beta: return minimax
-            alpha = max(minimax, alpha)
-
+            if minimax > alpha:
+                alpha = minimax
+                if not depth: self.move = move
+        
         return minimax 
         
     def min(self, alpha, beta, depth=0) -> float:
-        if depth != 0 and AlphaBetaPrunning.is_terminal(self.state, 1):
-            return 1
-    
         if depth > self.depth:
             return -self.heuristic()
+
+        if AlphaBetaPrunning.is_terminal(self.state, self.color_idx):
+            return 1
+    
         minimax = np.inf
-
-        for move in self.get_moves(self.f_move): # min playes moves second
-            self.update_state(move, 2)
-            maxv = self.max(alpha, beta, depth+1)
+        for move in self.get_moves(not self.color_idx): # min playes moves second
+            self.update_state(move, self.color_idx + 1)
+            minimax = min(minimax, self.max(alpha, beta, depth+1))
             self.update_state(move, 0)
-
-            if maxv < minimax: minimax = maxv
             
             if minimax <= alpha: return minimax
             beta = min(minimax, beta)
-        
+
         return minimax
