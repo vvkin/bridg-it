@@ -47,8 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     socket.on('game is over', winner => {
-        socket.disconnect();
         alert(`${(winner) ? 'Blue' : 'Red'} player won!`);
+        socket.disconnect();
     });
 });
 

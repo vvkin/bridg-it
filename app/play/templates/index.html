@@ -5,28 +5,33 @@
 		<h1>Bridg-It</h1>
 	</header>
 	<form id="index" method="POST">
-		<div class="level">
-			<button id="easy"  name="level" value="easy">Easy</button>
-			<button id="medium" name="level" value="medium">Medium</button>
-			<button id="hard" name="level" value="hard">Hard</button>
-		</div>
-		<div class="question"><span>Who begins?</span></div>
-		<div class="move-order">
-			<div class="order-buttons">
+		<div class="form-content">
+			<div class="move-option">
+				<p>Who is first?</p><br/>
 				<input id="player" type="radio" name="f-move" value="1" checked>
-				<label for="player">Player</label>
+				<label for="player">Player</label><br/>
 				<input id="bot" type="radio" name="f-move" value="0">
 				<label for="bot">Bot</label>
 			</div>
-			<div class="beginner">Player</div>
-			<div class="color-buttons">
+			<div class="level">
+				<button id="easy"  name="level" value="easy">Easy</button>
+				<button id="medium" name="level" value="medium">Medium</button>
+				<button id="hard" name="level" value="hard">Hard</button>
+			</div>
+			<div class="move-option">
+				<p>Color?</p><br/>
 				<input id="red" type="radio" name="color" value="0">
-				<label for="red">Red</label>
+				<label for="red">Red</label><br/>
 				<input id="blue" type="radio" name="color" value="1" checked>
-				<labl for="blue">Blue</labl>
+				<label for="blue">Blue</label>
 			</div>
 		</div>
 	</form>
+	<div class="choice-content">
+		<p class="text">Begins</p><br/>
+		<p class="beginner">Player</p>
+	</div> 
+	
 {% endblock %}
 
 {% block scripts %}

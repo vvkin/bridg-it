@@ -34,9 +34,10 @@ def on_is_over():
     else:
         bot_move = game.get_move()
         data = {'x': bot_move[0], 'y': bot_move[1], 'color': not game.color_idx}
+        emit('bot move', data)
+        
         if game.is_over(not game.color_idx): # bot won
             emit('game is over', game.winner)
-        emit('bot move', data)
 
 @socketio.on('disconnect', namespace='/play')
 def on_disconnect():
