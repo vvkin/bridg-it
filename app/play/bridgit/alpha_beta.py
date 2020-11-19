@@ -66,10 +66,27 @@ class AlphaBetaPrunning:
         
         DFS(move)
         return len(way)
+    
+    @staticmethod
+    def get_random_cell(state: np.ndarray, move: Tuple[int, int]):
+        while True:
+            x = np.random.randint(GRID_SIZE)
+            y = np.random.randint(GRID_SIZE)
+            if AlphaBetaPrunning.is_valid_cell((x, y)) and \
+                (x, y) != move:
+                return (x, y)
+    
+    @staticmethod
+    def calculate_chains(state: np.ndarray, move: Tuple[int, int], to_check: int):
+        total_length = AlphaBetaPrunning.get_chain(state, move, state[move])
+        for _ in range(2):
+            cell = AlphaBetaPrunning.get_random_cell(state, move)
+            total_length += AlphaBetaPrunning.get_chain(state, cell, to_check)
+        return total_length
 
     def heuristic(self, state: np.ndarray, move: Tuple[int, int]) -> float:
-        current = AlphaBetaPrunning.get_chain(state, move, state[move])
-        opponent = AlphaBetaPrunning.get_chain(state, move, 2 if state[move] == 1 else 1)
+        current = AlphaBetaPrunning.calculate_chains(state, move, state[move])
+        opponent = AlphaBetaPrunning.calculate_chains(state, move, 2 if state[move] == 1 else 1)
         return 0.5 if current >= opponent else -0.5
                  
     def get_moves(self, state) -> None:
@@ -96,7 +113,7 @@ class AlphaBetaPrunning:
         else: self.moves[color_idx].remove(move)
     
     def max(self, state, prev, alpha, beta, depth=0) -> float:
-        if depth > self.depth: 
+        if depth >= self.depth: 
             return self.heuristic(state, prev)
 
         if AlphaBetaPrunning.is_terminal(state, prev):
@@ -118,7 +135,7 @@ class AlphaBetaPrunning:
         return minimax 
         
     def min(self, state, prev, alpha, beta, depth=0) -> float:
-        if depth > self.depth:
+        if depth >= self.depth:
             return self.heuristic(state, prev)
 
         if AlphaBetaPrunning.is_terminal(state, prev):
