@@ -1,7 +1,6 @@
 import numpy as np
 from typing import Tuple, List, Generator
 from .const import GRID_SIZE
-import time
 
 class AlphaBetaPrunning:
     def __init__(self, depth: int, color_idx: bool):
@@ -52,10 +51,26 @@ class AlphaBetaPrunning:
         direct = AlphaBetaPrunning.is_way(state, move, True)
         converse = AlphaBetaPrunning.is_way(state, move, False)
         return direct and converse
+    
+    @staticmethod
+    def get_chain(state: np.ndarray, move: Tuple[int, int], to_search: int) -> int:
+        visited = np.zeros((GRID_SIZE, GRID_SIZE), np.bool)
+        way = set() # to prevent repetitions
 
-    def heuristic(self, color_idx: bool) -> float:
-        multiplier = 1 if color_idx == self.color_idx else -1
-        return multiplier * np.random.rand()
+        def DFS(src):
+            visited[src] = True
+            for dest in AlphaBetaPrunning.get_neighbors(src):
+                if state[dest] == to_search and not visited[dest]:
+                    way.add(dest[0] if to_search == 1 else dest[1])
+                    DFS(dest)
+        
+        DFS(move)
+        return len(way)
+
+    def heuristic(self, state: np.ndarray, move: Tuple[int, int]) -> float:
+        current = AlphaBetaPrunning.get_chain(state, move, state[move])
+        opponent = AlphaBetaPrunning.get_chain(state, move, 2 if state[move] == 1 else 1)
+        return 0.5 if current >= opponent else -0.5
                  
     def get_moves(self, state) -> None:
         blue_moves, red_moves = set(), set()
@@ -74,9 +89,7 @@ class AlphaBetaPrunning:
     def __call__(self, state: np.ndarray):
         self.move = None
         self.get_moves(state)
-        start = time.time()
         self.max(state, None, -np.inf, np.inf)
-        print(time.time() - start)
 
     def update_moves(self, move: Tuple[int, int], color_idx: bool, add: bool) -> None:
         if add: self.moves[color_idx].add(move)
@@ -84,7 +97,7 @@ class AlphaBetaPrunning:
     
     def max(self, state, prev, alpha, beta, depth=0) -> float:
         if depth > self.depth: 
-            return self.heuristic(self.color_idx)
+            return self.heuristic(state, prev)
 
         if AlphaBetaPrunning.is_terminal(state, prev):
             return -1
@@ -99,16 +112,14 @@ class AlphaBetaPrunning:
             
             if minimax >= beta: return minimax
             if minimax > alpha:
+                if not depth: self.move = move
                 alpha = minimax
-                if not depth: 
-                    print(minimax)
-                    self.move = move
-        
+                
         return minimax 
         
     def min(self, state, prev, alpha, beta, depth=0) -> float:
         if depth > self.depth:
-            return self.heuristic(not self.color_idx)
+            return self.heuristic(state, prev)
 
         if AlphaBetaPrunning.is_terminal(state, prev):
             return 1
