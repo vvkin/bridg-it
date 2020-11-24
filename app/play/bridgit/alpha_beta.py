@@ -142,7 +142,7 @@ class AlphaBetaPrunning:
             return 1
         
         minimax = np.inf
-        for move in self.moves[1]: # min playes moves second
+        for move in self.moves[1]:
             self.update_moves(move, 1, 0)
             state[move] = (not self.color_idx) + 1
             minimax = min(minimax, self.max(state, move, alpha, beta, depth+1))
