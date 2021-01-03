@@ -1,4 +1,4 @@
-# Brigd-it (Game of Gale)
+# Bridg-It (Game of Gale)
 Web implementation of GUI and AI for Brigd-It game with Python and SocketIO.
 ## Requirements
 * `flask`
